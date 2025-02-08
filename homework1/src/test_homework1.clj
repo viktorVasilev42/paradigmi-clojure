@@ -29,4 +29,29 @@
   (is (= 3 (hw1/my-count '("abc" "xyz" "test")))) ; proverka za lista od stringovi
 )
 
+(deftest test-append
+  ; concat na dve listi od numbers
+  (is (= '(1 2 3 4) (hw1/append '(1 2) '(3 4))))
+
+  ; concat na lista od symbols i lista od nubmers
+  (is (= '(a b c 4) (hw1/append '(a b c) '(4))))
+
+  ; concat na dve prazni listi
+  (is (= '() (hw1/append '() '())))
+
+  ; concat na dve listi od listi
+  (is (= '((1 2) (a b) (c d)) (hw1/append '((1 2)) '((a b) (c d)))))
+
+  ; concat na dva vektora
+  (is (= '(1 2 3 4) (hw1/append '[1 2 3] '[4])))
+)
+
+(deftest test-zip
+  (is (= '((x a) (y b) (z c)) (hw1/zip '(x y z) '(a b c))))  
+  (is (= '((1 a) (2 b) (3 c)) (hw1/zip '(1 2 3) '(a b c))))  
+  (is (= '((1 a) (2 b)) (hw1/zip '(1 2) '(a b c))))  
+  (is (= '() (hw1/zip '(a b c) '())))
+  (is (= '((a a) (b b) (c c)) (hw1/zip '(a b c) '(a b c))))  
+)
+
 (run-tests)

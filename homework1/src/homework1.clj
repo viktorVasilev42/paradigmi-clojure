@@ -226,3 +226,11 @@
     :else (append (f (first lst)) (my-flat-map f (rest lst)))
   )
 )
+
+(defn -main [] 
+  (let [
+        result (zip '(1 2 3) '(a b c))
+  ]
+    (println result)  
+  )
+)
