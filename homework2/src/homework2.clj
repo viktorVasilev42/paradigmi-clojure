@@ -379,7 +379,7 @@
   ]
     (cond
       (= 1 (count listset))
-        (= 0 (num-of-other-occurs-in-row-col-square coor, (first listset) puzzle))  
+        (= 0 (num-of-other-occurs-in-row-col-square coor (first listset) puzzle))  
       :else
         true
     )
@@ -391,6 +391,24 @@
     (fn[coor] (is-coor-valid coor puzzle))
     (for [x (range 9) y (range 9)] [x y])  
   )
+)
+
+(defn is-coor-solved [coor, puzzle]
+  (let [
+    listset (get-set-at-coor-as-list coor puzzle)
+  ]
+    (cond
+      (> 1 (count listset)) false
+      :else (= 0 (num-of-other-occurs-in-row-col-square coor (first listset) puzzle))  
+    )
+  )
+)
+
+(defn is-puzzle-solved [puzzle]
+  (every?
+    (fn[coor] (is-coor-solved coor puzzle))
+    (for [x (range 9) y (range 9)] [x y])  
+  )  
 )
 
 (defn gameloop [result]
@@ -460,38 +478,124 @@
   )
 )
 
-(defn print-sudoku [puzzle]
-  (println "==== Constraint Propagation ====")
-  (doseq [x (range 9)] (println (nth puzzle x)))
-  (println)
+(defn find-min-non-solved [puzzle]
   (let [
-    new-puzzle puzzle
-    new-puzzle (filter-by-trying new-puzzle)
-    new-puzzle (gameloop new-puzzle)
+      filt (filter
+        (fn[vect] (> (first vect) 1))
+        (map
+          (fn[coor] 
+            (let [ll (get-set-at-coor coor puzzle)]
+              (list (count ll) (first coor) (second coor) ll)
+            )
+          )
+          (for [x (range 9) y (range 9)] [x, y])
+        )
+      )
   ]
-  (println "==== Backtracking ====")
-    (doseq [x (range 9)] (println (nth new-puzzle x)))
+    (cond
+      (empty? filt) nil  
+      :else (rest(apply min-key first filt))
+    )
   )
-  
+
+)
+
+(defn print-sudoku [puzzle]
+  (doseq [x (range 9)] (println (nth puzzle x)))
+  ; (doseq [x (range 9)] 
+    ; (doseq [y (range 9)]
+      ; (let [
+        ; curr-el (get-el-at (list x y) puzzle)
+        ; to-print (cond
+          ; (= 0 curr-el) "_"
+          ; :else curr-el
+        ; )
+      ; ]
+        ; (cond
+          ; (contains? #{2 5} y)
+            ; (print to-print "| ")  
+          ; (= 8 y)
+            ; (println to-print)
+          ; :else
+            ; (do (print to-print) (print " "))
+        ; )
+      ; )
+    ; )
+    ; (cond
+      ; (contains? #{2 5} x)
+        ; (println "------+-------+------")
+    ; )
+  ; )
+)
+
+(defn my-backtracking [puzzle]
+  (let [
+    unsolved (find-min-non-solved puzzle)
+    unsolved-coor (list (first unsolved) (second unsolved))
+    unsolved-set (last unsolved)
+  ]
+    (cond
+      (is-puzzle-solved puzzle)
+        puzzle 
+      (nil? unsolved)
+        nil
+      :else
+        (some #(my-backtracking (gameloop (update-coor unsolved-coor #{%} puzzle))) unsolved-set)
+    )
+  )
+)
+
+(defn solve [puzzle]
+  (let [
+    final (gameloop puzzle)
+    final (filter-by-trying final)
+    final (gameloop final)
+    final (my-backtracking final)
+  ]
+    (cond 
+      (nil? final) nil
+      :else
+        (vec
+          (map
+            (fn[row] 
+              ;(vec
+                (map
+                  (fn[x] (first x))
+                  row  
+                )
+              ;)
+            )
+            final  
+          )  
+        )
+    )
+  )
 )
 
 
 (defn -main []
   (let [
     my-puzzle [
-        [0 2 5 0 0 1 0 0 0]
-        [1 0 4 2 5 0 0 0 0]
-        [0 0 6 0 0 4 2 1 0]
-        [0 5 0 0 0 0 3 2 0]
-        [6 0 0 0 2 0 0 0 9]
-        [0 8 7 0 0 0 0 6 0]
-        [0 9 1 5 0 0 6 0 0]
-        [0 0 0 0 7 8 1 0 3]
-        [0 0 0 6 0 0 5 9 0]
+[2 0 0  0 9 4  0 0 3]
+   [0 0 3  0 0 0  6 0 0]
+   [0 6 0  2 0 0  0 9 0]
+
+   [0 3 0  0 0 0  7 0 0]
+   [8 0 0  0 5 0  0 0 6]
+   [0 0 5  0 0 0  0 3 0]
+
+   [0 9 0  0 0 7  0 6 0]
+   [0 0 6  0 0 0  1 0 0]
+   [7 0 0  5 3 0  0 0 4]
     ]
     transpuzz (transform my-puzzle)
-    final (gameloop transpuzz)
+    final (solve transpuzz)
   ]
+    (println "Your puzzle:")
+    (print-sudoku my-puzzle)
+    (println)
+
+    (println "Solved:")
     (print-sudoku final)
   )
 )

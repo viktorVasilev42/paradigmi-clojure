@@ -1,7 +1,7 @@
 all: mainmain
 
 test:
-	clojure -M src/test_homework1.clj
+	clojure -M src/domasna4_test.clj
 
 mainmain:
-	clojure -M -m homework1
+	clojure -M -m domasna4
