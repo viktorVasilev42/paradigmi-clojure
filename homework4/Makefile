@@ -1,4 +1,7 @@
 all: mainmain
 
 mainmain:
-	clojure -M -m homework4
+	clojure -M -m boja
+
+test:
+	clojure -M src/boja_test.clj
