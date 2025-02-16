@@ -1,14 +1,20 @@
 (ns homework2)
 
-(defn get-row [x, puzzle]
+(defn get-row 
+  "zemi redica od sudoku"
+  [x, puzzle]
   (nth puzzle x)
 )
 
-(defn get-col [y, puzzle]
+(defn get-col 
+  "zemi kolona od sudoku"
+  [y, puzzle]
   (map (fn[x] (nth x y)) puzzle)
 )
 
-(defn get-el-at [coor, puzzle]
+(defn get-el-at 
+  "zemi element na koordinata vo matrica"
+  [coor, puzzle]
   (let [x (first coor)
         y (second coor)
         result (nth (nth puzzle x) y)
@@ -20,7 +26,10 @@
   )
 )
 
-(defn get-set-at-coor-as-list [coor, puzzle]
+(defn get-set-at-coor-as-list 
+  "zemi set koj se naoga na koordinata vo matrica
+  i pretvori go vo lista"
+  [coor, puzzle]
   (let [
     x (first coor)
     y (second coor)
@@ -29,7 +38,9 @@
   )
 )
 
-(defn get-set-at-coor [coor, puzzle]
+(defn get-set-at-coor 
+  "zemi set koj se naoga na koordinata vo matrica"
+  [coor, puzzle]
   (let [
     x (first coor)
     y (second coor)
@@ -38,7 +49,9 @@
   )  
 )
 
-(defn get-square [coor, puzzle]
+(defn get-square 
+  "zemi ja podmatricata vo koja spaga dadena koordinata"
+  [coor, puzzle]
   (let [
     x (first coor)
     y (second coor)
@@ -53,7 +66,12 @@
   )
 )
 
-(defn transform-vector [vect]
+(defn transform-vector 
+  "pretvori gi site broevi od daden vektor
+  vo soodvetnite setovi od mozni vrednosti.
+  za broj 0 => #{1 2 3 4 5 6 7 8 9}
+  za drug broj d => #{d}"
+  [vect]
   (map
     (fn [x]
       (cond
@@ -66,11 +84,16 @@
   )
 )
 
-(defn transform [puzzle]
+(defn transform 
+  "za sekoja podlista od matricata primeni transform-vector"
+  [puzzle]
   (map transform-vector puzzle)
 )
 
-(defn find-unit-in-list [lista, visited, row]
+(defn find-unit-in-list 
+  "najdi mnozestvo so 1 element vo lista i toa 
+  m-vo da ne e vo visited"
+  [lista, visited, row]
   (letfn [
     (inner-find-unit [ll, n]
       (cond
@@ -84,7 +107,9 @@
   )
 )
 
-(defn find-first-unit [puzzle, visited]
+(defn find-first-unit 
+  "pronajdi pozicija so edinecna vrednost"
+  [puzzle, visited]
   (first
     (filter
       (fn[noo]
@@ -98,7 +123,10 @@
   )
 )
 
-(defn remove-el-from-sets [el, lista]
+(defn remove-el-from-sets 
+  "izbrishi element od site setovi vo lista
+  no ne se brishe ako toj set ima samo eden element"
+  [el, lista]
   (map
     (fn[curr-set]
       (cond
@@ -111,13 +139,18 @@
 )
 
 (defn remove-el-from-single-set [el, ss]
+  "izbrishi element of set no ne se brishe
+  ako toj set ima samo eden element"
   (cond
     (= 1 (count ss)) ss
     :else (disj ss el)
   )
 )
 
-(defn clear-row [coor, puzzle]
+(defn clear-row 
+   "trgni ja vrednosta na reshenata poziicja od 
+   mnozestvata na site pozicii vo redicata"
+  [coor, puzzle]
   (cond
     (nil? coor) puzzle
     :else
@@ -144,7 +177,10 @@
   )
 )
 
-(defn clear-col [coor, puzzle]
+(defn clear-col 
+   "trgni ja vrednosta na reshenata poziicja od 
+   mnozestvata na site pozicii vo kolonata"
+  [coor, puzzle]
   (cond
     (nil? coor) puzzle 
     :else
@@ -178,7 +214,10 @@
   )
 )
 
-(defn clear-square [coor, puzzle]
+(defn clear-square 
+   "trgni ja vrednosta na reshenata poziicja od 
+   mnozestvata na site pozicii vo podmatricata"
+  [coor, puzzle]
   (cond 
     (nil? coor)
       puzzle
@@ -221,7 +260,11 @@
   )
 )
 
-(defn first-step [puzzle, visited]
+(defn first-step 
+  "naogjanje na pozicija so edinecna vrednost i otstranuvanje
+  na taa vrednost od site mnozestva vo nejzinata redica, kolona
+  i podmatrica"
+  [puzzle, visited]
   (let [
     first-unit (find-first-unit puzzle visited)
   ]
@@ -247,7 +290,11 @@
   )
 )
 
-(defn num-of-other-occurs-in-row-col-square [coor, currel, puzzle]
+(defn num-of-other-occurs-in-row-col-square 
+  "za vrednost koja se naoga na dadena koordinata vo sudoku,
+  najdi kolku pati se pojavuva vrednosta vo redicata,
+  kolonata ili podmatricata vo koi pripaga koordinatata"
+  [coor, currel, puzzle]
   (let [
         x (first coor)
         y (second coor)
@@ -294,7 +341,9 @@
   )
 )
 
-(defn update-list-at-pos [lista, x, newel]
+(defn update-list-at-pos 
+  "smeni vrednost na daden indeks vo lista"
+  [lista, x, newel]
   (letfn [
       (update-list-inner [li, xi, newi, ind]
         (cond
@@ -308,7 +357,9 @@
   )  
 )
 
-(defn update-coor [coor, newel, puzzle]
+(defn update-coor 
+  "smeni vrednost na dadena koordinata vo sudoku"
+  [coor, newel, puzzle]
   (let [
       x (first coor)
       y (second coor)
@@ -328,7 +379,12 @@
   )
 )
 
-(defn second-step-for-coor [coor, listset-at-coor, puzzle]
+(defn second-step-for-coor 
+  "proverka za dadena pozicija (koordinata), dali
+  vo nejzinoto mnozestvo se naoga vrednost koja ne
+  se pojavuva vo niedno drugo mnozestvo vo redicata,
+  kolonata ili podmatricata vo koja pripaga koordinatata"
+  [coor, listset-at-coor, puzzle]
   (cond
     (empty? listset-at-coor)
       nil
@@ -345,7 +401,10 @@
   )
 )
 
-(defn second-step [puzzle]
+(defn second-step 
+  "proverka na second-step-for-coor za sekoja koordinata
+  vo sudoku puzzle"
+  [puzzle]
   (let [
     opt-res (some
       (fn [coor]
@@ -373,7 +432,10 @@
   )
 )
 
-(defn is-coor-valid [coor, puzzle]
+(defn is-coor-valid 
+  "proveri za dadena pozicija vo sudoku dali ima kontradikcii
+  so nejzinata redica, kolona ili podmatrica"
+  [coor, puzzle]
   (let [
     listset (get-set-at-coor-as-list coor puzzle)
   ]
@@ -386,14 +448,19 @@
   )
 )
 
-(defn is-puzzle-valid [puzzle]
+(defn is-puzzle-valid 
+  "proveri is-coor-valid za site pozicii vo sudoku"
+  [puzzle]
   (every?
     (fn[coor] (is-coor-valid coor puzzle))
     (for [x (range 9) y (range 9)] [x y])  
   )
 )
 
-(defn is-coor-solved [coor, puzzle]
+(defn is-coor-solved 
+  "proveri dali dadena pozicija e reshena i bez kontradikcii
+  vo nejzinata redica, kolona ili podmatrica"
+  [coor, puzzle]
   (let [
     listset (get-set-at-coor-as-list coor puzzle)
   ]
@@ -404,14 +471,20 @@
   )
 )
 
-(defn is-puzzle-solved [puzzle]
+(defn is-puzzle-solved 
+  "proveri is-coor-solved za site pozicii vo sudoku"
+  [puzzle]
   (every?
     (fn[coor] (is-coor-solved coor puzzle))
     (for [x (range 9) y (range 9)] [x y])  
   )  
 )
 
-(defn gameloop [result]
+(defn gameloop 
+  "izvrshuvaj first-step i second-step naizmenicno se dodeka
+  ne se povtori ist rezultat (uprosten sudoku) dva pati po red,
+  sto ke znaci deka sme iskoristile constraint propagation do kraj"
+  [result]
   (let [
     new-result (first-step result #{})
     new-result (second-step new-result)
@@ -425,7 +498,12 @@
   )
 )
 
-(defn filter-by-trying-at-coor [coor, puzzle]
+(defn filter-by-trying-at-coor 
+  "probaj backtracking za koordinata no samo na edno nivo. 
+  ova znaci za sekoja nereshena pozicija probaj edna vrednost,
+  i izvrshi constraint propagation. ova e nekogash dovolno 
+  za usto pogolemo uprostuvanje (ako ne i reshavanje) na sudoku"
+  [coor, puzzle]
   (letfn [
     (is-value-valid [currel]
       (let [
@@ -453,7 +531,9 @@
   )
 )
 
-(defn filter-by-trying [puzzle]
+(defn filter-by-trying 
+  "probaj filter-by-tring za celo sudoku"
+  [puzzle]
   (letfn [
     (inner-filter [in_puzz, x, y]
       (let [
@@ -478,7 +558,11 @@
   )
 )
 
-(defn find-min-non-solved [puzzle]
+(defn find-min-non-solved 
+  "najdi ja prvata nereshena pozicija so najmaliot broj na elementi
+  vo mnozestvoto. na ovoj nacin, pocnuvajki so backtracking od tuka
+  imame najoptimalen algoritam"
+  [puzzle]
   (let [
       filt (filter
         (fn[vect] (> (first vect) 1))
@@ -497,38 +581,40 @@
       :else (rest(apply min-key first filt))
     )
   )
-
 )
 
-(defn print-sudoku [puzzle]
-  (doseq [x (range 9)] (println (nth puzzle x)))
-  ; (doseq [x (range 9)] 
-    ; (doseq [y (range 9)]
-      ; (let [
-        ; curr-el (get-el-at (list x y) puzzle)
-        ; to-print (cond
-          ; (= 0 curr-el) "_"
-          ; :else curr-el
-        ; )
-      ; ]
-        ; (cond
-          ; (contains? #{2 5} y)
-            ; (print to-print "| ")  
-          ; (= 8 y)
-            ; (println to-print)
-          ; :else
-            ; (do (print to-print) (print " "))
-        ; )
-      ; )
-    ; )
-    ; (cond
-      ; (contains? #{2 5} x)
-        ; (println "------+-------+------")
-    ; )
-  ; )
+(defn print-sudoku 
+  "print sudoku puzzle"
+  [puzzle]
+  (doseq [x (range 9)] 
+    (doseq [y (range 9)]
+      (let [
+        curr-el (get-el-at (list x y) puzzle)
+        to-print (cond
+          (= 0 curr-el) "_"
+          :else curr-el
+        )
+      ]
+        (cond
+          (contains? #{2 5} y)
+            (print to-print "| ")  
+          (= 8 y)
+            (println to-print)
+          :else
+            (do (print to-print) (print " "))
+        )
+      )
+    )
+    (cond
+      (contains? #{2 5} x)
+        (println "------+-------+------")
+    )
+  )
 )
 
-(defn my-backtracking [puzzle]
+(defn my-backtracking 
+  "backtracking recursive algorithm"
+  [puzzle]
   (let [
     unsolved (find-min-non-solved puzzle)
     unsolved-coor (list (first unsolved) (second unsolved))
@@ -545,7 +631,13 @@
   )
 )
 
-(defn solve [puzzle]
+(defn solve 
+  "solve pravi gameloop, sto vsushnost e constraint propagation
+  se dodeka ima efekt. potoa probuva filtering-by-tring (edno nivo
+  na backtracking) i povtorno constraint-propagation. dokolku seushte
+  ne e resheno sudoku-to, pravi backtracking se dodeka ne go reshi
+  celoto sudoku"
+  [puzzle]
   (let [
     final (gameloop puzzle)
     final (filter-by-trying final)
@@ -576,17 +668,17 @@
 (defn -main []
   (let [
     my-puzzle [
-[2 0 0  0 9 4  0 0 3]
-   [0 0 3  0 0 0  6 0 0]
-   [0 6 0  2 0 0  0 9 0]
-
-   [0 3 0  0 0 0  7 0 0]
-   [8 0 0  0 5 0  0 0 6]
-   [0 0 5  0 0 0  0 3 0]
-
-   [0 9 0  0 0 7  0 6 0]
-   [0 0 6  0 0 0  1 0 0]
-   [7 0 0  5 3 0  0 0 4]
+      [2 0 0  0 9 4  0 0 3]
+      [0 0 3  0 0 0  6 0 0]
+      [0 6 0  2 0 0  0 9 0]
+   
+      [0 3 0  0 0 0  7 0 0]
+      [8 0 0  0 5 0  0 0 6]
+      [0 0 5  0 0 0  0 3 0]
+   
+      [0 9 0  0 0 7  0 6 0]
+      [0 0 6  0 0 0  1 0 0]
+      [7 0 0  5 3 0  0 0 4]
     ]
     transpuzz (transform my-puzzle)
     final (solve transpuzz)
