@@ -1,4 +1,4 @@
-(ns homework2)
+(ns sudoku)
 
 (defn get-row 
   "zemi redica od sudoku"

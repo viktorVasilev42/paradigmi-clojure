@@ -1,4 +1,7 @@
 all: mainmain
 
 mainmain:
-	clojure -M -m homework3
+	clojure -M -m poker
+
+test:
+	clojure -M src/poker_test.clj

@@ -1,7 +1,7 @@
 all: mainmain
 
 mainmain:
-	clojure -M -m homework2
+	clojure -M -m sudoku
 
 test:
-	clojure -M src/test_homework2.clj
+	clojure -M src/sudoku_test.clj

@@ -1,6 +1,6 @@
-(ns test-homework2
+(ns sudoku-test
   (:require [clojure.test :refer [deftest, is, run-tests]]
-    [homework2 :as hw2]
+    [sudoku :as hw2]
   )  
 )
 

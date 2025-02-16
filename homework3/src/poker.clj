@@ -1,10 +1,14 @@
-(ns homework3)
+(ns poker)
 
-(defn suit [card]
+(defn suit 
+  "vraka boja na karta"
+  [card]
   (second card)
 )
 
-(defn rank [card]
+(defn rank 
+  "vraka vrednost na karta"
+  [card]
   (let [
     first-char (first card)
     cardmap {\T 10, \J 11, \Q 12, \K 13, \A 14}
@@ -18,7 +22,11 @@
 
 
 
-(defn get-ranks-of-full-house [hand]
+(defn get-ranks-of-full-house 
+  "za full house
+  zemi vrednost na trite karti so ista vrednost
+  i zemi vrednost na ostanatite dve karti"
+  [hand]
   (let [
     freqs (frequencies
       (map
@@ -36,7 +44,9 @@
   )
 )
 
-(defn full-house? [hand]
+(defn full-house? 
+  "proverka za dali rakata e full-house"
+  [hand]
   (let [
     freqs (frequencies
       (map
@@ -52,7 +62,12 @@
   )
 )
 
-(defn get-ranks-of-three-of-kind [hand]
+(defn get-ranks-of-three-of-kind 
+  "za three of a kind
+  zemi vrednosta na trite karti so ista vrednost
+  potoa povisokata vrednost od dvete ostanati
+  i na kraj poslednata vrednost"
+  [hand]
   (let [
     freqs (frequencies
       (map
@@ -68,11 +83,18 @@
     second-rank (key (first freqs))
     third-rank (key (first (dissoc freqs second-rank)))
   ]
-    (list rank-of-three second-rank third-rank)
+    (cond
+      (>= second-rank third-rank)
+        (list rank-of-three second-rank third-rank)
+      :else
+        (list rank-of-three third-rank second-rank)
+    )
   )
 )
 
-(defn three-of-a-kind? [hand]
+(defn three-of-a-kind? 
+  "proveri dali rakata e three of a kind"
+  [hand]
   (and
     (not (full-house? hand))
     (some
@@ -87,7 +109,11 @@
   )
 )
 
-(defn get-ranks-of-four-of-kind [hand]
+(defn get-ranks-of-four-of-kind 
+  "za four of a kind
+  zemi vrednost na chetirite karti so ista vrednost
+  i na kraj preostanatata vrednost"
+  [hand]
   (let [
     freqs (frequencies
       (map
@@ -104,7 +130,9 @@
   )
 )
 
-(defn four-of-a-kind? [hand]
+(defn four-of-a-kind? 
+  "proveri dali rakata e four of a kind"
+  [hand]
   (some
     (fn[x] (= 4 (val x)))
     (frequencies
@@ -116,7 +144,10 @@
   )
 )
 
-(defn are-in-sequence? [hand]
+(defn are-in-sequence? 
+  "proveri dali kartite vo rakata se vo redosled
+  bez razlika vo koj redosled se navistina vo rakata"
+  [hand]
   (letfn [
     (inner-are-seq [rank-hand, prev-rank]
       (cond
@@ -148,7 +179,9 @@
   )
 )
 
-(defn flush? [hand]
+(defn flush? 
+  "proveri dali rakata e flush"
+  [hand]
   (and
     (some
       (fn[x] (= 5 (val x)))
@@ -165,7 +198,12 @@
 
 
 
-(defn get-ranks-of-two-pairs-desc [hand]
+(defn get-ranks-of-two-pairs-desc 
+  "za two pairs
+  prvo zemi ja povisokata vrednost od vrednostite na dvata para
+  potoa poniskata vrednost
+  i na kraj nesparenata vrednost"
+  [hand]
   (let [
     freqs (frequencies
       (map
@@ -198,7 +236,9 @@
   )
 )
 
-(defn two-pairs? [hand]
+(defn two-pairs? 
+  "proveri dali rakata e two pairs"
+  [hand]
   (let [
     freqs (frequencies
       (map
@@ -221,7 +261,11 @@
   )
 )
 
-(defn get-ranks-of-pair [hand]
+(defn get-ranks-of-pair 
+  "za pair
+  zemi ja vrednosta na dvete karti so ista vrednost
+  potoa ostanatite vrednosti na karti vo opagacki redosled"
+  [hand]
   (let [
     freqs (frequencies
       (map
@@ -241,7 +285,9 @@
   )
 )
 
-(defn pair? [hand]
+(defn pair? 
+  "proveri dali rakata e pair"
+  [hand]
   (some
       (fn[x] (= 2 (val x)))
       (frequencies
@@ -253,7 +299,9 @@
   )
 )
 
-(defn straight? [hand]
+(defn straight? 
+  "proveri dali rakata e straight"
+  [hand]
   (and
     (are-in-sequence? hand)
     (not-any?
@@ -268,7 +316,9 @@
   )
 )
 
-(defn straight-flush? [hand]
+(defn straight-flush? 
+  "proveri dali rakata e i straight i flush"
+  [hand]
   (and
     (are-in-sequence? hand)
     (some
@@ -283,7 +333,9 @@
   )
 )
 
-(defn value [hand]
+(defn value 
+  "vraka jachina na kombincijata (rakata)"
+  [hand]
   (cond
     (straight-flush? hand) 8
     (four-of-a-kind? hand) 7
@@ -298,7 +350,10 @@
 )
 
 
-(defn kickers [hand]
+(defn kickers 
+  "vraka lista od vrednosti za dadena kombinacija
+  koja se korsti pri ednakvost na jachina na kombinacija"
+  [hand]
   (let [
     curr-value (value hand)
   ]
@@ -314,12 +369,17 @@
       (= curr-value 1)
         (get-ranks-of-pair hand)
       :else
-        (reverse (sort hand))
+        (reverse  
+          (sort (map (fn[x] (rank x)) hand))
+        )
     )
   )
 )
 
-(defn higher-kicker? [kicker1, kicker2]
+(defn higher-kicker? 
+  "proveri koj ima podobra kombinacija (raka) pri ednakvost
+  na jachinata na rakata"
+  [kicker1, kicker2]
   (cond
     (or (empty? kicker1) (empty? kicker2))
       false
@@ -332,7 +392,9 @@
   )
 )
 
-(defn beats? [hand1, hand2]
+(defn beats? 
+  "proveri koja od dve kombinacii e pobednik"
+  [hand1, hand2]
   (let [
     value1 (value hand1)
     value2 (value hand2)
@@ -351,7 +413,9 @@
   )
 )
 
-(defn winning-hand [& hands]
+(defn winning-hand 
+  "za lista od kombinacii vrati koja od niv e pobednicka"
+  [& hands]
   (reduce
     (fn[x, y]
       (cond
